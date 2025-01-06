@@ -9,8 +9,9 @@
 * `private constructor`와 `companion object`로 빌더 패턴 대체
     * `private constructor`로 직접 객체 생성 제한
     * `companion object` 내부에 정의된 정적 팩토리 메소드 선언
-    * 팩토리 메소드 네이밍: of(), from() 등 의미 있는 이름으로 객체 생성 의도를 명확히 표현
-    * 명명된 파라미터와 기본값으로 유연한 객체 생성(빌더 패턴)
+       * 자바의 static 멤버와 유사 (JVM 수준에서는 동일하지는 않음, `MyClass.Companion.getCount()`
+       * 클래스 당 하나만 존재 가능
+       * 클래스 이름으로 직접 접근 가능 (하지만 자바에서는 `MyClass.Companion.MAX_COUNT` 형식으로 접근)
 
 * Lombok 관련
     * @Getter - 코틀린 프로퍼티로 대체
