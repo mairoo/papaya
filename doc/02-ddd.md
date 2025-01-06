@@ -7,8 +7,10 @@
     * JPA의 지연 로딩을 위해서는 var 필요할 수 있음
 
 * `private constructor`와 `companion object`로 빌더 패턴 대체
-    * 명명된 파라미터와 기본값으로 빌더의 장점 대체
-    * 팩토리 메소드 네이밍: of(), from() 등 상황에 맞게 선택
+    * `private constructor`로 직접 객체 생성 제한
+    * `companion object` 내부에 정의된 정적 팩토리 메소드 선언
+    * 팩토리 메소드 네이밍: of(), from() 등 의미 있는 이름으로 객체 생성 의도를 명확히 표현
+    * 명명된 파라미터와 기본값으로 유연한 객체 생성(빌더 패턴)
 
 * Lombok 관련
     * @Getter - 코틀린 프로퍼티로 대체
