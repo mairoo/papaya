@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.auth.model.user
 
+import kr.co.pincoin.api.app.member.user.request.UserCreateRequest
 import java.time.LocalDateTime
 
 class User private constructor(
@@ -78,5 +79,15 @@ class User private constructor(
             isSuperuser = true,
             isStaff = true
         )
+
+        fun from(request: UserCreateRequest): User {
+            return of(
+                email = request.email,
+                password = request.password,
+                username = request.username,
+                firstName = request.firstName,
+                lastName = request.lastName
+            )
+        }
     }
 }
