@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.global.config
 
-import kr.co.pincoin.api.global.security.DjangoPasswordEncoder
-import org.springframework.beans.factory.annotation.Value
+import kr.co.pincoin.api.global.security.password.DjangoPasswordEncoder
+import kr.co.pincoin.api.global.security.properties.CorsProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -16,17 +16,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    @Value("\${web-config.cors.allowed-origins:*}")
-    private val allowedOrigins: String,
-
-    @Value("\${web-config.cors.allowed-methods:*}")
-    private val allowedMethods: String,
-
-    @Value("\${web-config.cors.allowed-headers:*}")
-    private val allowedHeaders: String,
-
-    @Value("\${web-config.cors.max-age:3600}")
-    private val maxAge: Long,
+    private val corsProperties: CorsProperties,
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain = http
@@ -83,18 +73,14 @@ class SecurityConfig(
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val originPatterns = allowedOrigins.split(",")
-        val methods = allowedMethods.split(",")
-        val headers = allowedHeaders.split(",")
-        val age = maxAge
-
         val configuration = CorsConfiguration().apply {
             exposedHeaders = listOf("Set-Cookie")
             allowCredentials = true
-            allowedOriginPatterns = originPatterns
-            allowedMethods = methods
-            allowedHeaders = headers
-            maxAge = age
+
+            allowedOriginPatterns = corsProperties.allowedOrigins.split(",")
+            allowedMethods = corsProperties.allowedMethods.split(",")
+            allowedHeaders = corsProperties.allowedHeaders.split(",")
+            maxAge = corsProperties.maxAge
         }
 
         return UrlBasedCorsConfigurationSource().apply {

@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.global.security
+package kr.co.pincoin.api.global.security.password
 
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.nio.charset.StandardCharsets
