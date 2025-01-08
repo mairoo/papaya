@@ -3,7 +3,7 @@ package kr.co.pincoin.api.global.security.handler
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import kr.co.pincoin.api.global.exception.AuthErrorCode
+import kr.co.pincoin.api.global.exception.code.AuthErrorCode
 import kr.co.pincoin.api.global.response.error.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType

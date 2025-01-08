@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.global.exception
+package kr.co.pincoin.api.global.exception.code
 
 import org.springframework.http.HttpStatus
 
