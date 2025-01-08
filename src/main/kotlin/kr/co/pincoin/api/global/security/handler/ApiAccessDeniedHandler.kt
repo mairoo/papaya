@@ -3,7 +3,7 @@ package kr.co.pincoin.api.global.security.handler
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import kr.co.pincoin.api.global.exception.ErrorCode
+import kr.co.pincoin.api.global.exception.AuthErrorCode
 import kr.co.pincoin.api.global.response.error.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -27,8 +27,8 @@ class ApiAccessDeniedHandler(
 
             val errorResponse = ErrorResponse.of(
                 request = request,
-                status = ErrorCode.FORBIDDEN.status,
-                message = ErrorCode.FORBIDDEN.message
+                status = AuthErrorCode.FORBIDDEN.status,
+                message = AuthErrorCode.FORBIDDEN.message,
             )
 
             objectMapper.writeValue(writer, errorResponse)
