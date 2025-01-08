@@ -1,0 +1,39 @@
+package kr.co.pincoin.api.global.security.handler
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import kr.co.pincoin.api.global.exception.ErrorCode
+import kr.co.pincoin.api.global.response.error.ErrorResponse
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.stereotype.Component
+
+@Component
+class ApiAuthenticationEntryPoint(
+    private val objectMapper: ObjectMapper
+) : AuthenticationEntryPoint {
+    override fun commence(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        authException: AuthenticationException
+    ) {
+        val errorCode = ErrorCode.UNAUTHORIZED
+
+        response.apply {
+            status = HttpStatus.UNAUTHORIZED.value()
+            contentType = "${MediaType.APPLICATION_JSON_VALUE};charset=UTF-8"
+            characterEncoding = "UTF-8"
+
+            val errorResponse = ErrorResponse.of(
+                request = request,
+                status = errorCode.status,
+                message = errorCode.message
+            )
+
+            objectMapper.writeValue(writer, errorResponse)
+        }
+    }
+}

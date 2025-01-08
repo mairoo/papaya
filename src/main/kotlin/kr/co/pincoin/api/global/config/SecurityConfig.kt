@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.global.config
 
+import kr.co.pincoin.api.global.security.handler.ApiAuthenticationEntryPoint
 import kr.co.pincoin.api.global.security.password.DjangoPasswordEncoder
 import kr.co.pincoin.api.global.security.properties.CorsProperties
 import org.springframework.context.annotation.Bean
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -16,6 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
+    private val authenticationEntryPoint: ApiAuthenticationEntryPoint,
+    private val accessDeniedHandler: AccessDeniedHandler,
     private val corsProperties: CorsProperties,
 ) {
     @Bean
@@ -64,11 +68,11 @@ class SecurityConfig(
                 .anyRequest().authenticated()
         }
 //        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-//        .exceptionHandling { exception ->
-//            exception
-//                .authenticationEntryPoint(authenticationEntryPoint)
-//                .accessDeniedHandler(accessDeniedHandler)
-//        }
+        .exceptionHandling { exception ->
+            exception
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+        }
         .build()
 
     @Bean
