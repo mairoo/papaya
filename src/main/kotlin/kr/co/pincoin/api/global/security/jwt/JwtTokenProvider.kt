@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.global.security.jwt
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
@@ -7,7 +8,6 @@ import io.jsonwebtoken.security.Keys
 import kr.co.pincoin.api.global.exception.JwtAuthenticationException
 import kr.co.pincoin.api.global.exception.code.AuthErrorCode
 import kr.co.pincoin.api.global.security.properties.JwtProperties
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -15,7 +15,7 @@ import java.util.*
 class JwtTokenProvider(
     private val jwtProperties: JwtProperties
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
+    private val log = KotlinLogging.logger {}
 
     // @PostConstruct 스프링/자바 방식 대신에 lazy delegate 활용
     // 순수 코틀린 기능 활용한 필요한 시점에 초기화 (thread-safe 지연 초기화)
@@ -62,7 +62,7 @@ class JwtTokenProvider(
     }.getOrElse { exception ->
         when (exception) {
             is ExpiredJwtException -> {
-                log.warn("만료된 토큰: ${exception.message}")
+                log.warn { "만료된 토큰: ${exception.message}" }
                 throw JwtAuthenticationException(AuthErrorCode.EXPIRED_TOKEN)
             }
 
@@ -71,12 +71,12 @@ class JwtTokenProvider(
             is io.jsonwebtoken.UnsupportedJwtException,
             is io.jsonwebtoken.MalformedJwtException,
             is IllegalArgumentException -> {
-                log.warn("유효하지 않은 토큰: ${exception.message}")
+                log.warn { "유효하지 않은 토큰: ${exception.message}" }
                 throw JwtAuthenticationException(AuthErrorCode.INVALID_TOKEN)
             }
 
             else -> {
-                log.error("예기치 모한 오류", exception)
+                log.error(exception) { "예기치 못한 오류" }
                 throw JwtAuthenticationException(AuthErrorCode.UNEXPECTED)
             }
         }

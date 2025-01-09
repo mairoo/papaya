@@ -27,9 +27,10 @@ repositories {
 
 // 버전 상수
 object Versions {
-    const val NETTY_VERSION = "4.1.116.Final"
+    const val KOTLIN_LOGGING_VERSION = "7.0.3"
     const val QUERYDSL_VERSION = "5.1.0"
     const val JJWT_VERSION = "0.12.6"
+    const val NETTY_VERSION = "4.1.116.Final"
     const val DANAL_VERSION = "1.6.2"
 }
 
@@ -114,6 +115,9 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    // KotlinLogging
+    implementation("io.github.oshai:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING_VERSION}")
+
     // QueryDSL
     implementation("${Dependencies.QueryDsl.GROUP}:${Dependencies.QueryDsl.Artifacts.JPA}:${Versions.QUERYDSL_VERSION}:${Dependencies.QueryDsl.JAKARTA_CLASSIFIER}")
     annotationProcessor("${Dependencies.QueryDsl.GROUP}:${Dependencies.QueryDsl.Artifacts.APT}:${Versions.QUERYDSL_VERSION}:${Dependencies.QueryDsl.JAKARTA_CLASSIFIER}")
@@ -127,7 +131,8 @@ dependencies {
 
     // Netty DNS resolver for Mac
     if (Platform.isMacOS) {
-        val classifier = if (Platform.isArm64) Dependencies.Netty.Classifier.ARM64 else Dependencies.Netty.Classifier.X86
+        val classifier =
+            if (Platform.isArm64) Dependencies.Netty.Classifier.ARM64 else Dependencies.Netty.Classifier.X86
         runtimeOnly("${Dependencies.Netty.GROUP}:${Dependencies.Netty.Artifacts.DNS_RESOLVER_MACOS}:${Versions.NETTY_VERSION}:${classifier}")
     }
 
