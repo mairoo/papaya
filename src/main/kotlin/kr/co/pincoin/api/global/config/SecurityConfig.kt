@@ -5,6 +5,7 @@ import kr.co.pincoin.api.global.security.password.DjangoPasswordEncoder
 import kr.co.pincoin.api.global.security.properties.CorsProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -21,6 +22,7 @@ class SecurityConfig(
     private val authenticationEntryPoint: ApiAuthenticationEntryPoint,
     private val accessDeniedHandler: AccessDeniedHandler,
     private val corsProperties: CorsProperties,
+    private val environment: Environment
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain = http
@@ -57,6 +59,14 @@ class SecurityConfig(
         .authorizeHttpRequests { auth ->
             auth
                 .requestMatchers("/actuator/**").denyAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").let {
+                    // 운영에서는 swagger 사용 안 함
+                    if (environment.activeProfiles.contains("prod")) {
+                        it.denyAll()
+                    } else {
+                        it.permitAll()
+                    }
+                }
                 .requestMatchers(
                     "/auth/**",
                     "/oauth2/**",
