@@ -30,70 +30,24 @@ object Versions {
     const val KOTLIN_LOGGING_VERSION = "7.0.3"
     const val QUERYDSL_VERSION = "5.1.0"
     const val JJWT_VERSION = "0.12.6"
+    const val SPRINGDOC_OPENAPI_VERSION = "2.8.1"
     const val NETTY_VERSION = "4.1.116.Final"
     const val DANAL_VERSION = "1.6.2"
 }
 
 // OS 및 아키텍처 관련 상수
 object Platform {
-    const val ARCH_ARM64 = "aarch64"
-    const val OS_MACOS = "mac"
+    val nettyClassifier: String? = when {
+        System.getProperty("os.name").lowercase().contains("mac") ->
+            if (System.getProperty("os.arch").lowercase().contains("aarch64")) "osx-aarch_64"
+            else "osx-x86_64"
 
-    val isMacOS = System.getProperty("os.name").lowercase().contains(OS_MACOS)
-    val isArm64 = System.getProperty("os.arch").lowercase().contains(ARCH_ARM64)
-}
-
-object Dependencies {
-    object QueryDsl {
-        const val GROUP = "com.querydsl"
-        const val JAKARTA_CLASSIFIER = "jakarta"
-
-        object Artifacts {
-            const val JPA = "querydsl-jpa"
-            const val APT = "querydsl-apt"
-        }
-    }
-
-    object Jakarta {
-        const val GROUP = "jakarta"
-
-        object Artifacts {
-            const val ANNOTATION = "jakarta.annotation-api"
-            const val PERSISTENCE = "jakarta.persistence-api"
-        }
-    }
-
-    object Jwt {
-        const val GROUP = "io.jsonwebtoken"
-
-        object Artifacts {
-            const val API = "jjwt-api"
-            const val IMPL = "jjwt-impl"
-            const val JACKSON = "jjwt-jackson"
-        }
-    }
-
-    object Netty {
-        const val GROUP = "io.netty"
-
-        object Artifacts {
-            const val DNS_RESOLVER_MACOS = "netty-resolver-dns-native-macos"
-        }
-
-        object Classifier {
-            const val ARM64 = "osx-aarch_64"
-            const val X86 = "osx-x86_64"
-        }
-    }
-
-    object Local {
-        object Artifacts {
-            const val DANAL = "jsinbi-${Versions.DANAL_VERSION}.jar"
-        }
+        else -> null
     }
 }
 
 dependencies {
+    // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -101,43 +55,54 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+
+    // Development
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    // Database
     runtimeOnly("com.h2database:h2")
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+
+    // Annotation Processing
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // KotlinLogging
+    // Logging
     implementation("io.github.oshai:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING_VERSION}")
 
     // QueryDSL
-    implementation("${Dependencies.QueryDsl.GROUP}:${Dependencies.QueryDsl.Artifacts.JPA}:${Versions.QUERYDSL_VERSION}:${Dependencies.QueryDsl.JAKARTA_CLASSIFIER}")
-    annotationProcessor("${Dependencies.QueryDsl.GROUP}:${Dependencies.QueryDsl.Artifacts.APT}:${Versions.QUERYDSL_VERSION}:${Dependencies.QueryDsl.JAKARTA_CLASSIFIER}")
-    annotationProcessor("${Dependencies.Jakarta.GROUP}.annotation:${Dependencies.Jakarta.Artifacts.ANNOTATION}")
-    annotationProcessor("${Dependencies.Jakarta.GROUP}.persistence:${Dependencies.Jakarta.Artifacts.PERSISTENCE}")
+    implementation("com.querydsl:querydsl-jpa:${Versions.QUERYDSL_VERSION}:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:${Versions.QUERYDSL_VERSION}:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 
     // JWT
-    implementation("${Dependencies.Jwt.GROUP}:${Dependencies.Jwt.Artifacts.API}:${Versions.JJWT_VERSION}")
-    runtimeOnly("${Dependencies.Jwt.GROUP}:${Dependencies.Jwt.Artifacts.IMPL}:${Versions.JJWT_VERSION}")
-    runtimeOnly("${Dependencies.Jwt.GROUP}:${Dependencies.Jwt.Artifacts.JACKSON}:${Versions.JJWT_VERSION}")
+    implementation("io.jsonwebtoken:jjwt-api:${Versions.JJWT_VERSION}")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:${Versions.JJWT_VERSION}")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${Versions.JJWT_VERSION}")
+
+    // SpringDoc OpenAPI Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${Versions.SPRINGDOC_OPENAPI_VERSION}")
 
     // Netty DNS resolver for Mac
-    if (Platform.isMacOS) {
-        val classifier =
-            if (Platform.isArm64) Dependencies.Netty.Classifier.ARM64 else Dependencies.Netty.Classifier.X86
-        runtimeOnly("${Dependencies.Netty.GROUP}:${Dependencies.Netty.Artifacts.DNS_RESOLVER_MACOS}:${Versions.NETTY_VERSION}:${classifier}")
+    Platform.nettyClassifier?.let {
+        runtimeOnly("io.netty:netty-resolver-dns-native-macos:${Versions.NETTY_VERSION}:${it}")
     }
 
     // 다날 휴대폰 인증
-    implementation(files("libs/${Dependencies.Local.Artifacts.DANAL}"))
+    implementation(files("libs/jsinbi-${Versions.DANAL_VERSION}.jar"))
 }
 
 kotlin {
